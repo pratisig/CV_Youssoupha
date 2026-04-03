@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Youssoupha Mbodji – CV Cartographique Premium</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--navy:#0D2137;--teal:#1B7A6E;--teal2:#25A899;--gold:#E8B84B;--light:#F4F7FA;
+--white:#FFFFFF;--text:#1a2a3a;--muted:#5a7a8a;--border:#dde6ee;
+}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--light);color:var(--text);min-height:100vh; overflow: hidden;}
+
+/* HEADER */
+#header{background:var(--navy);color:#fff;padding:0;display:flex;align-items:stretch;min-height:110px;position:relative;z-index:1001}
+#header-left{background:#0a1c2e;display:flex;align-items:center;justify-content:center;padding:15px 20px;min-width:110px}
+#avatar-placeholder{width:70px;height:70px;border-radius:50%;border:3px solid var(--gold);background:linear-gradient(135deg,var(--teal),var(--teal2));display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;text-shadow: 0 2px 4px rgba(0,0,0,0.3);}
+#header-info{flex:1;padding:12px 20px;display:flex;flex-direction:column;justify-content:center}
+#header-info h1{font-size:22px;font-weight:700;letter-spacing:1px;color:#fff;margin-bottom:2px}
+#header-info .title{font-size:11px;color:var(--gold);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;font-weight:600}
+.contact-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:2px}
+.contact-item{font-size:10.5px;color:#b0c8d8;display:flex;align-items:center;gap:5px}
+.contact-item svg{width:12px;height:12px;fill:#b0c8d8}
+#header-badges{display:flex;flex-direction:column;justify-content:center;padding:10px 18px;gap:5px;min-width:140px;background: rgba(0,0,0,0.1)}
+.badge{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:20px;padding:3px 10px;font-size:9.5px;color:var(--gold);text-align:center;white-space:nowrap;font-weight:600}
+
+/* MAIN LAYOUT */
+#main{display:flex;height:calc(100vh - 110px)}
+
+/* SIDEBAR */
+#sidebar{width:320px;min-width:300px;background:var(--white);border-right:1.5px solid var(--border);overflow-y:auto;display:flex;flex-direction:column;z-index:1000}
+#sidebar-tabs{display:flex;border-bottom:2px solid var(--border);position:sticky;top:0;background:white;z-index:10}
+.tab-btn{flex:1;padding:12px 4px;font-size:10.5px;font-weight:700;background:none;border:none;cursor:pointer;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;border-bottom:3px solid transparent;transition:all .2s}
+.tab-btn.active{color:var(--teal);border-bottom-color:var(--teal);background:rgba(27,122,110,0.03)}
+.tab-content{display:none;padding:15px;flex:1}
+.tab-content.active{display:block}
+
+/* TIMELINE */
+.tl-item{display:flex;gap:12px;margin-bottom:12px;cursor:pointer;border-radius:10px;padding:10px;transition:all .2s;border: 1px solid transparent}
+.tl-item:hover,.tl-item.active{background:white;border-color:var(--border);box-shadow: 0 4px 12px rgba(0,0,0,0.05)}
+.tl-item.active{border-left: 4px solid var(--teal)}
+.tl-left{display:flex;flex-direction:column;align-items:center;min-width:32px}
+.tl-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;border:2px solid transparent;background: white;box-shadow: 0 2px 4px rgba(0,0,0,0.1)}
+.tl-line{width:2px;background:var(--border);flex:1;margin:4px 0}
+.tl-body{flex:1;min-width:0}
+.tl-period{font-size:9px;color:var(--gold);font-weight:800;letter-spacing:.5px;text-transform:uppercase;margin-bottom:3px}
+.tl-org{font-size:12px;font-weight:700;color:var(--navy);line-height:1.2;margin-bottom:2px}
+.tl-pos{font-size:10.5px;color:var(--teal);font-weight:600;margin-bottom:3px}
+.tl-loc{font-size:10px;color:var(--muted);display:flex;align-items:center;gap:3px}
+.org-logo-tl{height:18px;max-width:80px;object-fit:contain;margin-bottom:5px;display:block;filter: grayscale(0.2)}
+
+/* SKILLS */
+.skills-section{margin-bottom:18px}
+.skills-title{font-size:11px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.skills-title::before{content:'';display:block;width:4px;height:14px;background:var(--teal);border-radius:2px}
+.skill-item{margin-bottom:8px}
+.skill-label{display:flex;justify-content:space-between;font-size:10.5px;margin-bottom:4px;color:var(--text);font-weight:500}
+.skill-bar{height:6px;background:#e8eef3;border-radius:4px;overflow:hidden}
+.skill-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--teal),var(--teal2))}
+.tag{display:inline-block;background:var(--light);border:1px solid var(--border);border-radius:12px;padding:3px 10px;font-size:9.5px;color:var(--teal);margin:2px;font-weight:600}
+.tag-gold{background:#fef9ee;border-color:#f0d080;color:#8a6200}
+
+/* EDUCATION */
+.edu-item{margin-bottom:12px;padding:10px;background:var(--light);border-radius:8px;border-left:3px solid var(--teal);transition: transform 0.2s}
+.edu-item:hover{transform: translateX(3px)}
+.edu-year{font-size:9px;color:var(--gold);font-weight:800}
+.edu-degree{font-size:11px;font-weight:700;color:var(--navy);margin:2px 0}
+.edu-school{font-size:10px;color:var(--muted);line-height:1.3}
+.edu-mention{font-size:9.5px;color:var(--teal2);font-weight:700;margin-top:3px}
+
+/* MAP COMPONENTS */
+#map-wrap{flex:1;display:flex;flex-direction:column;position:relative}
+#map{flex:1;z-index:1}
+#map-legend{position:absolute;bottom:20px;left:20px;background:white;border:1px solid var(--border);border-radius:10px;padding:12px;font-size:10px;z-index:999;box-shadow:0 4px 15px rgba(0,0,0,0.1)}
+#map-legend h4{font-size:11px;color:var(--navy);margin-bottom:8px;font-weight:700;border-bottom:1px solid var(--border);padding-bottom:4px}
+.legend-item{display:flex;align-items:center;gap:8px;margin-bottom:5px;color:var(--text);font-weight:500}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+
+/* INFO PANEL */
+#info-panel{position:absolute;top:20px;right:20px;width:300px;background:rgba(255,255,255,0.98);border:1px solid var(--border);border-radius:12px;padding:18px;z-index:999;box-shadow:0 8px 24px rgba(0,0,0,0.15);display:none;max-height:calc(100% - 40px);overflow-y:auto;backdrop-filter: blur(4px)}
+#info-panel h3{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:2px}
+#info-panel .ip-period{font-size:10px;color:var(--gold);font-weight:800;text-transform:uppercase;margin-bottom:8px}
+#info-panel .ip-org{font-size:12px;color:var(--teal);font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:10px;border-bottom: 1px solid var(--border);padding-bottom:10px}
+#info-panel .ip-logo{height:22px;max-width:100px;object-fit:contain}
+#info-panel ul{list-style:none;padding:0}
+#info-panel ul li{font-size:11px;color:var(--text);padding:6px 0 6px 18px;border-bottom:1px solid #f0f4f7;position:relative;line-height:1.5}
+#info-panel ul li::before{content:'•';position:absolute;left:4px;color:var(--teal);font-weight:700;font-size:14px}
+.ip-tags{display:flex;flex-wrap:wrap;margin-top:12px;gap:4px}
+
+/* STATS */
+.stat-row{display:flex;gap:8px;margin-bottom:15px}
+.stat-box{flex:1;background:var(--navy);color:#fff;border-radius:8px;padding:10px 5px;text-align:center;box-shadow: 0 4px 6px rgba(0,0,0,0.1)}
+.stat-num{font-size:18px;font-weight:700;color:var(--gold)}
+.stat-lbl{font-size:8px;color:#8ab0c8;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+
+/* MARKERS */
+.custom-marker{width:34px;height:34px;border-radius:50%;border:3px solid white;box-shadow:0 3px 10px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;transition: transform 0.2s}
+.custom-marker:hover{transform: scale(1.1);z-index: 1000!important}
+
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:#f0f4f8}::-webkit-scrollbar-thumb{background:var(--teal2);border-radius:3px}
+</style>
+</head>
+<body>
+
+<div id="header">
+  <div id="header-left">
+    <div id="avatar-placeholder">YM</div>
+  </div>
+  <div id="header-info">
+    <h1>YOUSSOUPHA MBODJI</h1>
+    <div class="title">Information Manager &nbsp;·&nbsp; GIS Spécialiste &nbsp;·&nbsp; Data Analyst</div>
+    <div class="contact-row">
+      <span class="contact-item"><svg viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>(+221) 77 127 03 87</span>
+      <span class="contact-item"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>mbodjyoussou123@gmail.com</span>
+      <span class="contact-item"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Dakar, Sénégal</span>
+    </div>
+  </div>
+  <div id="header-badges">
+    <div class="badge">🌍 7 Pays Couverts</div>
+    <div class="badge">🏥 Exp. Humanitaire</div>
+    <div class="badge">🗺️ Expert SIG / BI</div>
+  </div>
+</div>
+
+<div id="main">
+  <div id="sidebar">
+    <div id="sidebar-tabs">
+      <button class="tab-btn active" onclick="showTab('timeline')">Parcours</button>
+      <button class="tab-btn" onclick="showTab('skills')">Compétences</button>
+      <button class="tab-btn" onclick="showTab('edu')">Formation</button>
+    </div>
+
+    <div id="tab-timeline" class="tab-content active">
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-num">13</div><div class="stat-lbl">Missions MSF</div></div>
+        <div class="stat-box"><div class="stat-num">07</div><div class="stat-lbl">Pays</div></div>
+        <div class="stat-box"><div class="stat-num">06+</div><div class="stat-lbl">Années</div></div>
+      </div>
+      <div id="timeline-list"></div>
+    </div>
+
+    <div id="tab-skills" class="tab-content">
+      <div class="skills-section">
+        <div class="skills-title">SIG & Télédétection</div>
+        <div class="skill-item"><div class="skill-label"><span>ArcGIS Pro / Online / StoryMap</span><span>95%</span></div><div class="skill-bar"><div class="skill-fill" style="width:95%"></div></div></div>
+        <div class="skill-item"><div class="skill-label"><span>QGIS / GEE</span><span>90%</span></div><div class="skill-bar"><div class="skill-fill" style="width:90%"></div></div></div>
+        <div class="skill-item"><div class="skill-label"><span>Photogrammétrie (Drone)</span><span>85%</span></div><div class="skill-bar"><div class="skill-fill" style="width:85%"></div></div></div>
+      </div>
+      <div class="skills-section">
+        <div class="skills-title">Data & Visualisation</div>
+        <div class="skill-item"><div class="skill-label"><span>Power BI / Tableau / Dashboards</span><span>92%</span></div><div class="skill-bar"><div class="skill-fill" style="width:92%"></div></div></div>
+        <div class="skill-item"><div class="skill-label"><span>SQL / Python (Pandas/Geopandas)</span><span>78%</span></div><div class="skill-bar"><div class="skill-fill" style="width:78%"></div></div></div>
+        <div class="skill-item"><div class="skill-label"><span>Analyse Statistique (R / SPSS)</span><span>75%</span></div><div class="skill-bar"><div class="skill-fill" style="width:75%"></div></div></div>
+      </div>
+      <div class="skills-section">
+        <div class="skills-title">Outils de collecte</div>
+        <div class="picto-grid">
+          <span class="tag">KoBoToolbox</span><span class="tag">ODK</span><span class="tag">Survey123</span>
+          <span class="tag">CommCare</span><span class="tag">XLSForm</span><span class="tag">Device Magic</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-edu" class="tab-content">
+      <div class="skills-title">Diplômes Académiques</div>
+      <div class="edu-item">
+        <div class="edu-year">2016</div>
+        <div class="edu-degree">Master Pro Ingénierie en Développement Local</div>
+        <div class="edu-school">Univ. Gaston Berger, Saint-Louis</div>
+        <div class="edu-mention">🏅 Mention Très Bien - Spécialité SIG</div>
+      </div>
+      <div class="edu-item">
+        <div class="edu-year">2014</div>
+        <div class="edu-degree">Licence en Géographie</div>
+        <div class="edu-school">Univ. Gaston Berger, Saint-Louis</div>
+        <div class="edu-mention">🏅 Mention Bien</div>
+      </div>
+      
+      <div class="skills-title" style="margin-top:20px">Certifications</div>
+      <div class="edu-item">
+        <div class="edu-year">2023</div>
+        <div class="edu-degree">Management de Projet (PMI)</div>
+        <div class="edu-school">LinkedIn Learning / PMI Foundation</div>
+      </div>
+      <div class="edu-item">
+        <div class="edu-year">2022</div>
+        <div class="edu-degree">Stay Safe 2.0 (Niveaux 1, 2, 3)</div>
+        <div class="edu-school">FICR - Sécurité humanitaire</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="map-wrap">
+    <div id="map"></div>
+    <div id="map-legend">
+      <h4>📍 Organisations</h4>
+      <div class="legend-item"><div class="legend-dot" style="background:#E8B84B"></div>MSF – Regional Referent</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#C0392B"></div>INSO – Info Manager</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#2980B9"></div>CICR – GIS & Analytics</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#1B7A6E"></div>ONAS – Géomaticien</div>
+    </div>
+    <div id="info-panel">
+      <button onclick="closePanel()" style="position:absolute;top:10px;right:12px;cursor:pointer;font-size:18px;color:var(--muted);background:none;border:none">✕</button>
+      <div id="ip-content"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const jobs=[
+  {
+    id:0,period:'AVRIL 2025 – PRÉSENT',org:'MSF',fullorg:'Médecins Sans Frontières (MSF)',pos:'GIS Regional Referent',loc:'Dakar, Sénégal',lat:14.71,lng:-17.48,color:'#E8B84B',icon:'🩺',
+    logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/MSF_logo.svg/250px-MSF_logo.svg.png',
+    tasks:['Référent GIS régional couvrant 13 missions pour 3 OC (OCP, OCG, OCBA)','Supervision des activités SIG dans 7 pays d\'Afrique sub-saharienne','Coordination des équipes SIG multi-opérationnelles et appui stratégique','Appui méthodologique et technique aux équipes terrain pour la réponse médicale','Production de produits cartographiques d\'aide à la décision','Formation des staffs sur les nouveaux outils SIG'],
+    tags:['Regional','MSF OCP/OCG/OCBA','13 Missions','Multi-pays']
+  },
+  {
+    id:1,period:'AOÛT 2021 – MARS 2025',org:'INSO',fullorg:'International NGO Safety Organisation (INSO)',pos:'Information Manager',loc:'Bangui, RCA',lat:4.38,lng:18.56,color:'#C0392B',icon:'🛡️',
+    logo:'https://www.ngosafety.org/wp-content/uploads/2020/05/INSO_logo.png',
+    tasks:['Qualité des bases de données sécuritaires (+99% de données propres)','Formation du staff sur l\'enregistrement et l\'analyse de données sécuritaires','Création de dashboards et rapports interactifs pour les ONG partenaires','Support technique aux partenaires humanitaires (sessions de formation)','Gestion du parc informatique et équipements de télécom (VHF, VSAT)','Design des rapports pour les bailleurs (ECHO, BHA, SDC)'],
+    tags:['Power BI','Sécurité','Dashboard','RCA']
+  },
+  {
+    id:2,period:'AOÛT 2020 – JUIL. 2021',org:'CICR',fullorg:'Délégation Régionale du CICR',pos:'Regional GIS Data Manager (a.i.)',loc:'Dakar, Sénégal',lat:14.68,lng:-17.45,color:'#2980B9',icon:'🔴',
+    logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Flag_of_the_Red_Cross.svg/150px-Flag_of_the_Red_Cross.svg.png',
+    tasks:['Coordination des équipes SIG des 9 pays de la région Afrique de l\'Ouest','Conception d\'outils de collecte de données pour évaluations humanitaires','Analyse S&E des projets WatHab (Eau et Habitat)','Conception du projet innovant Cattle-tracking','Développement d\'applications Webmapping et Dashboards régionaux'],
+    tags:['Régional','WatHab','S&E','Dakar']
+  },
+  {
+    id:3,period:'FÉV. 2019 – JUIL. 2020',org:'CICR',fullorg:'Délégation du CICR au Mali',pos:'GIS Data & Analytics Officer',loc:'Bamako, Mali',lat:12.64,lng:-8.01,color:'#2980B9',icon:'🔴',
+    logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Flag_of_the_Red_Cross.svg/150px-Flag_of_the_Red_Cross.svg.png',
+    tasks:['Mise à jour du géoréférentiel CICR pour l\'ensemble du territoire Malien','Visualisation des activités terrain (FactSheets, rapports interactifs)','Point focal WatHab Project Assistant (WPA)','Enregistrement et suivi des indicateurs techniques et financiers','Formation des équipes locales sur les outils de reporting'],
+    tags:['Mali','GIS Officer','Tableau','Reporting']
+  },
+  {
+    id:4,period:'NOV. 2017 – JAN. 2019',org:'ONAS',fullorg:'Office National de l\'Assainissement (ONAS)',pos:'Géomaticien Intégrateur',loc:'Dakar, Sénégal',lat:14.75,lng:-17.42,color:'#1B7A6E',icon:'🚰',
+    logo:'',
+    tasks:['Vérification et intégration des données du réseau d\'assainissement du Sénégal','Élaboration de cartes de support pour la planification des interventions terrain','Maintenance du Système d\'Information Géographique de l\'Office'],
+    tags:['Assainissement','Sénégal','SIG Réseau']
+  },
+  {
+    id:5,period:'MAI 2017 – AOÛT 2017',org:'IRD',fullorg:'IRD UMR G-EAU',pos:'Géomaticien',loc:'Saint-Louis, Sénégal',lat:16.03,lng:-16.49,color:'#8E44AD',icon:'🚁',
+    logo:'',
+    tasks:['Photogrammétrie d\'images drone pour la cartographie agricole','Création de parcellaires agricoles intégrés en base de données SIG','Analyse des cultures et types de sols par télédétection'],
+    tags:['Drone','Agriculture','Télédétection']
+  }
+];
+
+// Timeline building
+const tlList=document.getElementById('timeline-list');
+jobs.forEach((j,i)=>{
+  const d=document.createElement('div');
+  d.className='tl-item';
+  d.id='tl-'+i;
+  const logoHtml=j.logo?`<img src="${j.logo}" class="org-logo-tl" onerror="this.style.display='none'">`:'';
+  d.innerHTML=`
+    <div class="tl-left">
+      <div class="tl-dot" style="border-color:${j.color};color:${j.color}">${j.icon}</div>
+      ${i<jobs.length-1?'<div class="tl-line"></div>':''}
+    </div>
+    <div class="tl-body">
+      <div class="tl-period">${j.period}</div>
+      ${logoHtml}
+      <div class="tl-org">${j.org} · ${j.fullorg}</div>
+      <div class="tl-pos">${j.pos}</div>
+      <div class="tl-loc">📍 ${j.loc}</div>
+    </div>`;
+  d.onclick=()=>activateJob(i);
+  tlList.appendChild(d);
+});
+
+// Map Setup
+const map=L.map('map',{center:[10,0],zoom:4});
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{maxZoom:19}).addTo(map);
+
+const markers=[];
+jobs.forEach((j,i)=>{
+  const icon=L.divIcon({
+    className:'',
+    html:`<div class="custom-marker" style="background:${j.color}">${j.icon}</div>`,
+    iconSize:[34,34],iconAnchor:[17,17]
+  });
+  const m=L.marker([j.lat,j.lng],{icon}).addTo(map);
+  m.on('click',()=>{ activateJob(i); });
+  markers.push(m);
+});
+
+function activateJob(i){
+  const j=jobs[i];
+  document.querySelectorAll('.tl-item').forEach(el=>el.classList.remove('active'));
+  const tlEl=document.getElementById('tl-'+i);
+  if(tlEl){tlEl.classList.add('active');tlEl.scrollIntoView({behavior:'smooth',block:'nearest'});}
+  
+  map.flyTo([j.lat,j.lng],6,{duration:1.2});
+  
+  const logoHtml=j.logo?`<img src="${j.logo}" class="ip-logo" onerror="this.style.display='none'">`:'';
+  const tasksHtml=j.tasks.map(t=>`<li>${t}</li>`).join('');
+  const tagsHtml=j.tags.map(t=>`<span class="tag">${t}</span>`).join('');
+  
+  document.getElementById('ip-content').innerHTML=`
+    <div class="ip-period">${j.period}</div>
+    <h3>${j.pos}</h3>
+    <div class="ip-org">${logoHtml}<span>${j.org}</span></div>
+    <p style="font-size:10px; color:var(--muted); margin-bottom:10px;">📍 ${j.loc}</p>
+    <ul>${tasksHtml}</ul>
+    <div class="ip-tags">${tagsHtml}</div>`;
+  document.getElementById('info-panel').style.display='block';
+}
+
+function closePanel(){ document.getElementById('info-panel').style.display='none'; }
+function showTab(t){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+  document.querySelector(`[onclick="showTab('${t}')"]`).classList.add('active');
+  document.getElementById('tab-'+t).classList.add('active');
+}
+
+// Empreinte des pays (Sénégal, Mali, RCA)
+const countryColors = { 'Sénégal': '#1B7A6E', 'Mali': '#2980B9', 'RCA': '#C0392B' };
+// Simplification visuelle des polygones
+const countryBounds = {
+  'Sénégal': [[12.3,-17.6],[16.7,-17.6],[16.7,-11.2],[12.3,-11.2]],
+  'Mali': [[10,-12],[25,-12],[25,4],[10,4]],
+  'RCA': [[2,14],[11,14],[11,28],[2,28]]
+};
+</script>
+</body>
+</html>
+
