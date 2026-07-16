@@ -1,40 +1,472 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="light">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Youssoupha Mbodji – Humanitarian GIS &amp; Digital Innovation</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--navy:#0D2137;--teal:#1B7A6E;--teal2:#25A899;--gold:#E8B84B;--light:#F4F7FA;--white:#fff;--text:#1a2a3a;--muted:#5a7a8a;--border:#dde6ee;}
-body{font-family:'Segoe UI',Arial,sans-serif;background:var(--light);color:var(--text);}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Youssoupha Mbodji · Humanitarian Intelligence Portfolio</title>
 
-/* NAV */
-#topnav{position:fixed;top:0;left:0;right:0;background:var(--navy);z-index:3000;display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:48px;box-shadow:0 2px 12px rgba(0,0,0,.35)}
-.nav-brand{color:var(--gold);font-weight:800;font-size:14px;letter-spacing:1px;white-space:nowrap}
-.nav-links{display:flex;gap:4px}
-.nav-links button{color:#b0c8d8;font-size:11px;font-weight:600;text-decoration:none;padding:6px 12px;border-radius:6px;transition:all .2s;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;border:none;background:none}
-.nav-links button:hover,.nav-links button.active{background:rgba(255,255,255,.1);color:var(--gold)}
-.btn-dl{background:var(--teal);color:#fff;font-size:10px;font-weight:700;padding:6px 14px;border-radius:20px;text-decoration:none;letter-spacing:.5px;transition:background .2s}
-.btn-dl:hover{background:var(--teal2)}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-/* PAGES */
-.page{display:none}
-.page.active{display:block}
-#page-cv.active{display:flex;flex-direction:column;position:fixed;top:48px;left:0;right:0;bottom:0;overflow:hidden}
-#page-projects.active,#page-about.active{display:block;padding-top:48px;min-height:100vh;overflow-y:auto}
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 
-/* CV HEADER */
-#cv-header{background:var(--navy);color:#fff;display:flex;align-items:stretch;min-height:110px;flex-shrink:0}
-#header-left{background:#0a1c2e;display:flex;align-items:center;justify-content:center;padding:15px 20px;min-width:110px}
-#avatar-img{width:72px;height:72px;border-radius:50%;border:3px solid var(--gold);object-fit:cover;display:block}
-#avatar-ph{width:72px;height:72px;border-radius:50%;border:3px solid var(--gold);background:linear-gradient(135deg,var(--teal),var(--teal2));display:none;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff}
-#header-info{flex:1;padding:12px 20px;display:flex;flex-direction:column;justify-content:center}
-#header-info h1{font-size:22px;font-weight:700;letter-spacing:1px;color:#fff;margin-bottom:2px}
-.hd-title{font-size:11px;color:var(--gold);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;font-weight:600}
-.contact-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:2px}
+  <style>
+    :root,[data-theme="light"]{
+      --text-xs:clamp(.75rem,.7rem + .25vw,.875rem);
+      --text-sm:clamp(.875rem,.8rem + .35vw,1rem);
+      --text-base:clamp(1rem,.95rem + .25vw,1.125rem);
+      --text-lg:clamp(1.125rem,1rem + .75vw,1.5rem);
+      --text-xl:clamp(1.5rem,1.2rem + 1.25vw,2.25rem);
+      --text-2xl:clamp(2rem,1.2rem + 2.5vw,3.5rem);
+
+      --space-1:.25rem;--space-2:.5rem;--space-3:.75rem;--space-4:1rem;
+      --space-5:1.25rem;--space-6:1.5rem;--space-8:2rem;--space-10:2.5rem;
+      --space-12:3rem;--space-16:4rem;--space-20:5rem;
+
+      --color-bg:#f7f6f2;
+      --color-surface:#f9f8f5;
+      --color-surface-2:#fbfbf9;
+      --color-surface-offset:#edeae5;
+      --color-border:#d4d1ca;
+      --color-text:#28251d;
+      --color-text-muted:#6b6861;
+      --color-text-faint:#9f9b94;
+      --color-primary:#01696f;
+      --color-primary-hover:#0c4e54;
+      --color-gold:#d19900;
+      --color-blue:#006494;
+      --color-red:#a13544;
+      --color-purple:#7a39bb;
+      --color-success:#437a22;
+
+      --shadow-sm:0 1px 2px rgba(0,0,0,.06);
+      --shadow-md:0 10px 30px rgba(0,0,0,.08);
+
+      --radius-sm:.375rem;
+      --radius-md:.5rem;
+      --radius-lg:.875rem;
+      --radius-xl:1rem;
+      --radius-full:9999px;
+
+      --font-display:'Instrument Serif', Georgia, serif;
+      --font-body:'Inter', Arial, sans-serif;
+    }
+
+    [data-theme="dark"]{
+      --color-bg:#171614;
+      --color-surface:#1c1b19;
+      --color-surface-2:#201f1d;
+      --color-surface-offset:#26231f;
+      --color-border:#393836;
+      --color-text:#e1ddd7;
+      --color-text-muted:#b0aaa2;
+      --color-text-faint:#7f7a73;
+      --color-primary:#4f98a3;
+      --color-primary-hover:#76b1ba;
+      --color-gold:#e8af34;
+      --color-blue:#5591c7;
+      --color-red:#dd6974;
+      --color-purple:#a86fdf;
+      --color-success:#6daa45;
+      --shadow-sm:0 1px 2px rgba(0,0,0,.2);
+      --shadow-md:0 12px 32px rgba(0,0,0,.35);
+    }
+
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth;scroll-padding-top:84px}
+    body{
+      min-height:100dvh;
+      line-height:1.6;
+      font-family:var(--font-body);
+      font-size:var(--text-base);
+      color:var(--color-text);
+      background:var(--color-bg);
+    }
+    img,svg{display:block;max-width:100%;height:auto}
+    a{text-decoration:none;color:inherit}
+    button{cursor:pointer;border:none;background:none;color:inherit}
+    :focus-visible{outline:2px solid var(--color-primary);outline-offset:3px;border-radius:var(--radius-sm)}
+    ::selection{background:rgba(1,105,111,.18);color:var(--color-text)}
+
+    .skip-link{position:absolute;left:-9999px;top:auto}
+    .skip-link:focus{
+      left:var(--space-4);top:var(--space-4);background:var(--color-surface);
+      padding:var(--space-3);z-index:3000;border:1px solid var(--color-border)
+    }
+
+    .topbar{
+      position:sticky;top:0;z-index:2000;
+      backdrop-filter:blur(14px);
+      background:color-mix(in oklab,var(--color-bg) 84%,transparent);
+      border-bottom:1px solid color-mix(in oklab,var(--color-text) 12%,transparent);
+    }
+    .nav{
+      max-width:1200px;margin:0 auto;padding:var(--space-3) var(--space-4);
+      display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)
+    }
+    .brand{
+      display:flex;align-items:center;gap:var(--space-3);
+      font-size:var(--text-sm);font-weight:700;letter-spacing:.08em;text-transform:uppercase
+    }
+    .brand-mark{
+      width:38px;height:38px;border-radius:50%;display:grid;place-items:center;
+      background:linear-gradient(135deg,var(--color-primary),var(--color-blue));
+      color:#fff;font-weight:800
+    }
+    .nav-links{display:flex;flex-wrap:wrap;gap:var(--space-2)}
+    .nav-links a{
+      min-height:44px;display:flex;align-items:center;padding:0 var(--space-4);
+      border-radius:var(--radius-full);font-size:var(--text-sm);font-weight:600;
+      color:var(--color-text-muted);white-space:nowrap
+    }
+    .nav-links a:hover,.nav-links a.active{background:var(--color-surface);color:var(--color-primary)}
+    .nav-actions{display:flex;align-items:center;gap:var(--space-2)}
+    .icon-btn,.cta{
+      min-height:44px;padding:0 var(--space-4);border-radius:var(--radius-full);
+      border:1px solid color-mix(in oklab,var(--color-text) 12%,transparent);
+      background:var(--color-surface);display:flex;align-items:center;justify-content:center
+    }
+    .cta{font-weight:700;background:var(--color-primary);color:#fff;border-color:transparent}
+    .cta:hover{background:var(--color-primary-hover)}
+
+    .hero{
+      max-width:1200px;margin:0 auto;padding:var(--space-16) var(--space-4) var(--space-10);
+      display:grid;grid-template-columns:1.3fr .9fr;gap:var(--space-8);align-items:end
+    }
+    .eyebrow{
+      font-size:var(--text-xs);letter-spacing:.18em;text-transform:uppercase;
+      color:var(--color-primary);font-weight:800;margin-bottom:var(--space-3)
+    }
+    h1,h2,h3{font-family:var(--font-display);line-height:1.08;font-weight:400}
+    h1{font-size:var(--text-2xl);max-width:12ch}
+    .hero p{max-width:62ch;color:var(--color-text-muted);margin-top:var(--space-4)}
+    .hero-card{
+      background:var(--color-surface);
+      border:1px solid color-mix(in oklab,var(--color-text) 12%,transparent);
+      border-radius:var(--radius-xl);padding:var(--space-6);box-shadow:var(--shadow-md)
+    }
+    .hero-metrics{
+      display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-3);margin-top:var(--space-6)
+    }
+    .metric{
+      background:var(--color-surface-2);border-radius:var(--radius-lg);padding:var(--space-4);
+      border:1px solid color-mix(in oklab,var(--color-text) 10%,transparent)
+    }
+    .metric strong{
+      display:block;font-size:var(--text-xl);font-family:var(--font-display);color:var(--color-primary)
+    }
+    .metric span{
+      font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.08em;
+      color:var(--color-text-muted);font-weight:700
+    }
+
+    .chip-list{display:flex;flex-wrap:wrap;gap:var(--space-2);margin-top:var(--space-4)}
+    .chip{
+      padding:8px 12px;border-radius:999px;background:var(--color-surface-2);
+      border:1px solid color-mix(in oklab,var(--color-text) 8%,transparent);
+      font-size:var(--text-xs);font-weight:700
+    }
+
+    .section{max-width:1200px;margin:0 auto;padding:var(--space-10) var(--space-4)}
+    .section-head{
+      display:flex;justify-content:space-between;align-items:flex-end;
+      gap:var(--space-6);margin-bottom:var(--space-6)
+    }
+    .section-head p{max-width:62ch;color:var(--color-text-muted)}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-6)}
+    .panel{
+      background:var(--color-surface);
+      border:1px solid color-mix(in oklab,var(--color-text) 12%,transparent);
+      border-radius:var(--radius-xl);padding:var(--space-6);box-shadow:var(--shadow-sm)
+    }
+
+    .impact-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-4)}
+    .impact-card{
+      padding:var(--space-5);background:var(--color-surface);border-radius:var(--radius-lg);
+      border:1px solid color-mix(in oklab,var(--color-text) 12%,transparent)
+    }
+    .impact-card strong{
+      display:block;font-family:var(--font-display);font-size:var(--text-xl);color:var(--color-primary)
+    }
+    .impact-card span{font-size:var(--text-sm);font-weight:700}
+    .impact-card small{display:block;margin-top:4px;color:var(--color-text-muted);font-size:var(--text-xs)}
+
+    .timeline-card{
+      display:grid;grid-template-columns:110px 1fr;gap:var(--space-4);
+      padding:var(--space-4) 0;border-bottom:1px solid color-mix(in oklab,var(--color-text) 10%,transparent)
+    }
+    .timeline-card:last-child{border-bottom:none}
+    .timeline-year{
+      font-size:var(--text-sm);font-weight:800;color:var(--color-gold);
+      letter-spacing:.08em;text-transform:uppercase
+    }
+    .timeline-card h3{font-size:var(--text-lg);font-family:var(--font-body);font-weight:700}
+    .timeline-card p{color:var(--color-text-muted);font-size:var(--text-sm)}
+
+    #map{
+      height:460px;border-radius:var(--radius-xl);overflow:hidden;
+      border:1px solid color-mix(in oklab,var(--color-text) 12%,transparent)
+    }
+    .legend{display:flex;flex-wrap:wrap;gap:var(--space-3);margin-top:var(--space-4)}
+    .legend span{
+      display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;
+      background:var(--color-surface-2);font-size:var(--text-xs);font-weight:700
+    }
+    .legend i{width:10px;height:10px;border-radius:50%}
+
+    .project-list{display:grid;gap:var(--space-5)}
+    .project-card{
+      background:var(--color-surface);
+      border:1px solid color-mix(in oklab,var(--color-text) 12%,transparent);
+      border-radius:var(--radius-xl);padding:var(--space-6);box-shadow:var(--shadow-sm)
+    }
+    .project-top{
+      display:flex;justify-content:space-between;gap:var(--space-4);
+      align-items:flex-start;margin-bottom:var(--space-4)
+    }
+    .project-top h3{font-size:var(--text-xl)}
+    .project-tag{
+      padding:8px 12px;border-radius:999px;
+      background:color-mix(in oklab,var(--color-primary) 10%,var(--color-surface));
+      color:var(--color-primary);font-weight:800;font-size:var(--text-xs);
+      letter-spacing:.08em;text-transform:uppercase;white-space:nowrap
+    }
+    .project-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-4)}
+    .project-block{padding:var(--space-4);background:var(--color-surface-2);border-radius:var(--radius-lg)}
+    .project-block h4{
+      font-size:var(--text-sm);font-weight:800;text-transform:uppercase;
+      letter-spacing:.08em;margin-bottom:6px;color:var(--color-primary)
+    }
+    .project-block p,.project-block li{font-size:var(--text-sm);color:var(--color-text-muted)}
+    .project-block ul{padding-left:1rem}
+
+    .digital-lab table{
+      width:100%;border-collapse:collapse;background:var(--color-surface);
+      border-radius:var(--radius-xl);overflow:hidden;
+      border:1px solid color-mix(in oklab,var(--color-text) 12%,transparent)
+    }
+    .digital-lab th,.digital-lab td{
+      padding:var(--space-4);text-align:left;
+      border-bottom:1px solid color-mix(in oklab,var(--color-text) 8%,transparent);
+      font-size:var(--text-sm)
+    }
+    .digital-lab th{
+      font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.08em;
+      color:var(--color-text-muted);background:var(--color-surface-2)
+    }
+
+    .stack-grid,.unique-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-4)}
+    .level-card{
+      padding:var(--space-5);background:var(--color-surface);
+      border-radius:var(--radius-lg);border:1px solid color-mix(in oklab,var(--color-text) 12%,transparent)
+    }
+    .level-card h3{
+      font-size:var(--text-sm);font-family:var(--font-body);font-weight:800;
+      letter-spacing:.08em;text-transform:uppercase;margin-bottom:var(--space-3);color:var(--color-primary)
+    }
+
+    .cert-grid,.pub-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-4)}
+    .cert-item,.pub-item{
+      padding:var(--space-5);background:var(--color-surface);
+      border-radius:var(--radius-lg);border:1px solid color-mix(in oklab,var(--color-text) 12%,transparent)
+    }
+    .cert-item strong,.pub-item strong{display:block;margin-bottom:6px}
+    .unique-grid .panel{text-align:center;padding:var(--space-6)}
+    .equals{
+      display:grid;place-items:center;font-size:var(--text-2xl);
+      font-family:var(--font-display);color:var(--color-primary);margin-top:var(--space-6)
+    }
+
+    footer{
+      max-width:1200px;margin:0 auto;padding:var(--space-10) var(--space-4) var(--space-16);
+      color:var(--color-text-muted)
+    }
+    .footer-card{
+      display:flex;justify-content:space-between;gap:var(--space-6);align-items:center;
+      padding:var(--space-6);border-radius:var(--radius-xl);background:var(--color-surface);
+      border:1px solid color-mix(in oklab,var(--color-text) 12%,transparent)
+    }
+
+    @media (max-width:980px){
+      .hero,.grid-2,.impact-grid,.stack-grid,.unique-grid,.project-grid,.cert-grid,.pub-grid{
+        grid-template-columns:1fr
+      }
+      .hero-metrics{grid-template-columns:1fr 1fr}
+      .nav{flex-wrap:wrap}
+      .nav-links{order:3;width:100%;overflow:auto;padding-bottom:4px}
+      .project-top,.footer-card,.section-head{flex-direction:column;align-items:flex-start}
+      .timeline-card{grid-template-columns:1fr}
+    }
+    @media (max-width:640px){
+      .hero{padding-top:var(--space-10)}
+      .hero-metrics{grid-template-columns:1fr}
+      .nav{padding:var(--space-3)}
+      #map{height:360px}
+    }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Aller au contenu</a>
+
+  <header class="topbar">
+    <nav class="nav" aria-label="Navigation principale">
+      <a class="brand" href="#top">
+        <span class="brand-mark" aria-hidden="true">YM</span>
+        <span>Humanitarian Digital Innovation</span>
+      </a>
+
+      <div class="nav-links">
+        <a href="#summary">Executive Summary</a>
+        <a href="#impact">My Impact</a>
+        <a href="#journey">Humanitarian Journey</a>
+        <a href="#projects">Signature Projects</a>
+        <a href="#innovation">Innovation Lab</a>
+        <a href="#stack">Technical Stack</a>
+        <a href="#certifications">Certifications</a>
+        <a href="#unique">Unique Profile</a>
+        <a href="#contact">Contact</a>
+      </div>
+
+      <div class="nav-actions">
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Basculer le thème">◐</button>
+        <a class="cta" href="https://www.linkedin.com/in/youssoupha-mbodji-pratisig" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top">
+      <div>
+        <div class="eyebrow">Humanitarian Intelligence • Geospatial Innovation • Digital Transformation</div>
+        <h1>Youssoupha MBODJI</h1>
+        <p>
+          <strong>Senior Humanitarian Information Management, Geospatial Intelligence & Digital Innovation Advisor.</strong>
+          Transforming data into humanitarian action through information management, spatial intelligence,
+          predictive analytics, automation, and AI-enabled GIS workflows.
+        </p>
+        <div class="chip-list">
+          <span class="chip">Regional GIS Referent</span>
+          <span class="chip">GIS Regional Technical Referent</span>
+          <span class="chip">7+ years humanitarian operations</span>
+          <span class="chip">20+ digital tools developed</span>
+        </div>
+      </div>
+
+      <aside class="hero-card" aria-label="Quick profile">
+        <div class="eyebrow">Current footprint</div>
+        <p>Dakar, Sénégal · West & Central Africa · GIS, IM, analytics, automation, AI, public health intelligence.</p>
+        <div class="hero-metrics">
+          <div class="metric"><strong>13</strong><span>MSF missions</span></div>
+          <div class="metric"><strong>7</strong><span>Countries</span></div>
+          <div class="metric"><strong>100+</strong><span>Products</span></div>
+          <div class="metric"><strong>20+</strong><span>Digital tools</span></div>
+          <div class="metric"><strong>100+</strong><span>MCP AI tools</span></div>
+          <div class="metric"><strong>7+</strong><span>Years in ops</span></div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="section" id="summary">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Executive Summary</div>
+          <h2>Who I am</h2>
+        </div>
+      </div>
+      <div class="grid-2">
+        <article class="panel">
+          <p>
+            Je suis un spécialiste en Information Management, SIG et Data Analytics avec près de sept années
+            d'expérience dans les opérations humanitaires en Afrique de l'Ouest et Centrale. Mon expertise
+            consiste à concevoir des solutions numériques qui améliorent la prise de décision, la qualité des
+            données et la préparation des réponses d'urgence.
+          </p>
+          <p style="margin-top:var(--space-4)">
+            Au-delà de l'analyse de données, je développe des plateformes, des applications et des outils
+            d'automatisation qui répondent à des besoins opérationnels concrets.
+          </p>
+        </article>
+        <article class="panel">
+          <div class="eyebrow">Areas of Expertise</div>
+          <div class="impact-grid">
+            <div class="impact-card">
+              <strong>IM</strong>
+              <span>Information Management</span>
+              <small>Decision support, dashboards, data flows.</small>
+            </div>
+            <div class="impact-card">
+              <strong>SIG</strong>
+              <span>GIS & Remote Sensing</span>
+              <small>Spatial analysis, field mapping, drone workflows.</small>
+            </div>
+            <div class="impact-card">
+              <strong>AI</strong>
+              <span>Digital Innovation</span>
+              <small>MCP, automation, predictive and conversational GIS.</small>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="impact">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">My Impact</div>
+          <h2>Operational scale</h2>
+        </div>
+      </div>
+      <div class="impact-grid">
+        <div class="impact-card">
+          <strong>13</strong>
+          <span>MSF Missions supported</span>
+          <small>Regional coverage across multiple operational centers.</small>
+        </div>
+        <div class="impact-card">
+          <strong>7</strong>
+          <span>Countries</span>
+          <small>Current and recent scope in West and Central Africa.</small>
+        </div>
+        <div class="impact-card">
+          <strong>100+</strong>
+          <span>Analytical products</span>
+          <small>Maps, dashboards, decision-support outputs.</small>
+        </div>
+        <div class="impact-card">
+          <strong>20+</strong>
+          <span>Digital tools developed</span>
+          <small>Applications, automation engines and platforms.</small>
+        </div>
+        <div class="impact-card">
+          <strong>100+</strong>
+          <span>AI tools through MCP</span>
+          <small>Integrated AI-assisted GIS and geospatial workflows.</small>
+        </div>
+        <div class="impact-card">
+          <strong>7+</strong>
+          <span>Years in humanitarian operations</span>
+          <small>Emergency, security and public health contexts.</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="journey">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Humanitarian Journey</div>
+          <h2>Timeline & current coverage</h2>
+        </div>
+        <p>Frise chronologique et carte Afrique montrant les pays couverts et les bases principales.</p>
+      </div>
+      <div class="grid-2">
+        <div class="panel">
+          <div class="timeline-card">
+            <div class="timeline-year">2019</div>
+            <div>
+              <h3>ICRC · Mali</h3>
+              <p>GIS Data & Analytics Officer — géoréférentiel national, visualisation des.contact-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:2px}
 .ci{font-size:10.5px;color:#b0c8d8;display:flex;align-items:center;gap:5px}
 .ci a{color:#b0c8d8;text-decoration:none}.ci a:hover{color:var(--gold)}
 .ci svg{width:12px;height:12px;fill:#b0c8d8}
