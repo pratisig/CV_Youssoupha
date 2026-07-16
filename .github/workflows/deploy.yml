@@ -1,0 +1,68 @@
+name: Deploy Portfolio to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract ZIP file
+        run: |
+          # Find all zip files and extract them
+          for zipfile in *.zip; do
+            if [ -f "$zipfile" ]; then
+              echo "Extracting $zipfile..."
+              unzip -o "$zipfile" -d extracted
+            fi
+          done
+          
+          # If extracted folder exists, move contents to root
+          if [ -d "extracted" ]; then
+            # List contents
+            echo "Extracted contents:"
+            ls -la extracted/
+            
+            # Move all contents to root (excluding the zip itself)
+            cp -r extracted/* . 2>/dev/null || true
+            cp -r extracted/.* . 2>/dev/null || true
+            
+            # Clean up
+            rm -rf extracted
+            rm -f *.zip
+            
+            echo "Extraction complete!"
+            ls -la
+          else
+            echo "No zip files found or extraction failed"
+          fi
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
