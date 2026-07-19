@@ -25,35 +25,28 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Extract ZIP file
+      - name: Extract ZIP files
         run: |
-          # Find all zip files and extract them
+          # Find and extract all zip files in root
           for zipfile in *.zip; do
             if [ -f "$zipfile" ]; then
-              echo "Extracting $zipfile..."
-              unzip -o "$zipfile" -d extracted
+              echo "📦 Extracting $zipfile..."
+              unzip -o "$zipfile" -d temp_extract
             fi
           done
           
-          # If extracted folder exists, move contents to root
-          if [ -d "extracted" ]; then
-            # List contents
-            echo "Extracted contents:"
-            ls -la extracted/
-            
-            # Move all contents to root (excluding the zip itself)
-            cp -r extracted/* . 2>/dev/null || true
-            cp -r extracted/.* . 2>/dev/null || true
-            
-            # Clean up
-            rm -rf extracted
-            rm -f *.zip
-            
-            echo "Extraction complete!"
-            ls -la
-          else
-            echo "No zip files found or extraction failed"
+          # Move extracted contents to root
+          if [ -d "temp_extract" ]; then
+            echo "📁 Moving files to root..."
+            cp -rn temp_extract/* . 2>/dev/null || true
+            cp -rn temp_extract/.* . 2>/dev/null || true
+            rm -rf temp_extract
+            echo "✅ Extraction complete!"
           fi
+          
+          # List final structure
+          echo "📋 Final structure:"
+          ls -la
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
