@@ -25,12 +25,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Extract ZIP files
+      - name: Clean old files and extract ZIP
         run: |
-          # Find and extract all zip files in root
+          echo "🧹 Cleaning old files (keeping .git, .github, *.zip)..."
+          
+          # Remove everything except .git, .github and zip files
+          find . -maxdepth 1 \
+            ! -name '.git' \
+            ! -name '.github' \
+            ! -name '.' \
+            ! -name '*.zip' \
+            -exec rm -rf {} \;
+          
+          echo "📦 Extracting ZIP files..."
           for zipfile in *.zip; do
             if [ -f "$zipfile" ]; then
-              echo "📦 Extracting $zipfile..."
+              echo "  → Extracting $zipfile..."
               unzip -o "$zipfile" -d temp_extract
             fi
           done
@@ -38,13 +48,15 @@ jobs:
           # Move extracted contents to root
           if [ -d "temp_extract" ]; then
             echo "📁 Moving files to root..."
-            cp -rn temp_extract/* . 2>/dev/null || true
-            cp -rn temp_extract/.* . 2>/dev/null || true
+            cp -r temp_extract/* . 2>/dev/null || true
+            cp -r temp_extract/.* . 2>/dev/null || true
             rm -rf temp_extract
-            echo "✅ Extraction complete!"
+            echo "✅ Done!"
           fi
           
-          # List final structure
+          # Remove zip files from build
+          rm -f *.zip
+          
           echo "📋 Final structure:"
           ls -la
 
